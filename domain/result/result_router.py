@@ -4,6 +4,7 @@ from database import SessionLocal
 from datetime import datetime
 
 from models import Result
+from models import AnalysisModel
 
 import json
 import os
@@ -19,15 +20,18 @@ router = APIRouter(
 
 class JsonRequest(BaseModel):
     storeFilename: str
+    analysisModelId: int
 
 @router.post("/analyze")
 def analyze(jsonRequest: JsonRequest):
 
     db = SessionLocal()
-    findedResult = db.query(Result).filter(Result.store_filename==jsonRequest.storeFilename).all()
-    if findedResult != None:
+    findedResult = db.query(Result).filter(Result.store_filename==jsonRequest.storeFilename, Result.analysis_model_id==jsonRequest.analysisModelId).all()
+    if len(findedResult) > 0:
         print("db에서 조회")
         return json.loads(findedResult[0].result)
+
+    selectedAnalysisModel = db.query(AnalysisModel).filter(AnalysisModel.id==jsonRequest.analysisModelId).all()[0]
 
     class_list = ["Adialer.C", "Agent.FYI", "Allaple.A", "Allaple.L", "Alueron.gen!J",
                   "Autorun.K", "C2LOP.P", "C2LOP.gen!g", "Dialplatform.B", "Dontovo.A",
@@ -35,8 +39,7 @@ def analyze(jsonRequest: JsonRequest):
                   "Lolyda.AT", "Malex.gen!J", "Obfuscator.AD", "Rbot!gen", "Skintrim.N",
                   "Swizzor.gen!E", "Swizzor.gen!l", "VB.AT", "Wintrim.BX", "Yuner.A"]
 
-    model_path = 'models/malwareClassification_cnn.ckpt'
-    model = load_model(model_path)
+    model = load_model(selectedAnalysisModel.path)
 
     with open("C:/workspace/malware/malwarefile/" + jsonRequest.storeFilename, 'rb') as file:
         file_size = os.path.getsize("C:/workspace/malware/malwarefile/" + jsonRequest.storeFilename)
@@ -52,10 +55,10 @@ def analyze(jsonRequest: JsonRequest):
             predictions[i] = format(predictions[i], '.5f')
             output = {"className": class_list[i], "probability": predictions[i]}
             outputList.append(output)
-        result["apiModelName"] = "vgg16_model_v1"
+        result["apiModelName"] = selectedAnalysisModel.name
         result["outputList"] = outputList
 
-        resultForSave = Result(store_filename=jsonRequest.storeFilename, result=json.dumps(result), create_date=datetime.now())
+        resultForSave = Result(store_filename=jsonRequest.storeFilename, result=json.dumps(result), create_date=datetime.now(), analysis_model_id=selectedAnalysisModel.id)
         db.add(resultForSave)
         db.commit()
         print("새로운 파일에 대한 처리")

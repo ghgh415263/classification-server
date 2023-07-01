@@ -8,13 +8,15 @@ class Result(Base):
     __tablename__ = "result"
 
     id = Column(Integer, primary_key=True)
+    analysis_model_id = Column(Integer, nullable=False)
     store_filename = Column(Text, nullable=False)
     result = Column(Text, nullable=False)
     create_date = Column(DateTime, nullable=False)
 
-class Model(Base):
-    __tablename__ = "model"
+class AnalysisModel(Base):
+    __tablename__ = "analysis_model"
 
     id = Column(Integer, primary_key=True)
+    name = Column(Text, nullable=False)
     path = Column(Text, nullable=False)
     create_date = Column(DateTime, nullable=False)
