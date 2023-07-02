@@ -33,11 +33,7 @@ def analyze(jsonRequest: JsonRequest):
 
     selectedAnalysisModel = db.query(AnalysisModel).filter(AnalysisModel.id==jsonRequest.analysisModelId).all()[0]
 
-    class_list = ["Adialer.C", "Agent.FYI", "Allaple.A", "Allaple.L", "Alueron.gen!J",
-                  "Autorun.K", "C2LOP.P", "C2LOP.gen!g", "Dialplatform.B", "Dontovo.A",
-                  "Fakerean", "Instantaccess", "Lolyda.AA1", "Lolyda.AA2", "Lolyda.AA3",
-                  "Lolyda.AT", "Malex.gen!J", "Obfuscator.AD", "Rbot!gen", "Skintrim.N",
-                  "Swizzor.gen!E", "Swizzor.gen!l", "VB.AT", "Wintrim.BX", "Yuner.A"]
+    class_list = selectedAnalysisModel.class_list.split(',')
 
     model = load_model(selectedAnalysisModel.path)
 

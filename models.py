@@ -19,4 +19,5 @@ class AnalysisModel(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     path = Column(Text, nullable=False)
+    class_list = Column(Text, nullable=True)
     create_date = Column(DateTime, nullable=False)
