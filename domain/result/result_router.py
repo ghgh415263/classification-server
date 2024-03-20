@@ -26,7 +26,8 @@ class JsonRequest(BaseModel):
 def analyze(jsonRequest: JsonRequest):
 
     db = SessionLocal()
-    findedResult = db.query(Result).filter(Result.store_filename==jsonRequest.storeFilename, Result.analysis_model_id==jsonRequest.analysisModelId).all()
+    findedResult = db.query(Result)\
+        .filter(Result.store_filename==jsonRequest.storeFilename, Result.analysis_model_id==jsonRequest.analysisModelId).all()
     if len(findedResult) > 0:
         print("db에서 조회")
         return json.loads(findedResult[0].result)
