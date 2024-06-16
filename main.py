@@ -11,7 +11,7 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
 	await eureka_client.init_async(eureka_server="http://127.0.0.1:8761/eureka",
-                                   app_name="Ai-Model-Server",
+                                   app_name="AI-MODEL-SERVER",
                                    instance_port=8000)
 
 app.include_router(result_router.router)

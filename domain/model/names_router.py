@@ -12,8 +12,6 @@ def getModels():
     db = SessionLocal()
     models = db.query(AnalysisModel).all()
 
-    result = {}
-    result["analysisModelList"] = models
+    print(models)
+    return models
 
-    print(result)
-    return result
